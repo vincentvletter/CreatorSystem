@@ -1,6 +1,7 @@
 ﻿using CreatorSystem.Application.Common.Interfaces;
 using CreatorSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +17,20 @@ builder.Services.AddDbContext<IAppDbContext, AppDbContext>(opt =>
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreatorSystem.Application.Posts.Commands.CreatePostCommand).Assembly));
 
+builder.Host.UseSerilog((ctx, lc) =>
+    lc.WriteTo.Console()
+      .WriteTo.File("Logs/creatorsystem.log", rollingInterval: RollingInterval.Day)
+      .ReadFrom.Configuration(ctx.Configuration));
+
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await CreatorSystem.Infrastructure.Data.DbInitializer.SeedAsync(db);
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -25,5 +38,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapHealthChecks("/health");
+app.UseMiddleware<CreatorSystem.Api.Middleware.ExceptionHandlingMiddleware>();
+
 app.MapControllers();
+
 app.Run();
