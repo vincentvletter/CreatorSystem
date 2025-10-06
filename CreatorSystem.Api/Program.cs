@@ -1,7 +1,6 @@
-﻿using CreatorSystem.Infrastructure.Data;
+﻿using CreatorSystem.Application.Common.Interfaces;
+using CreatorSystem.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using MediatR;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +9,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // 🔥 Configure EF Core to use SQL Server
-builder.Services.AddDbContext<AppDbContext>(opt =>
+builder.Services.AddDbContext<IAppDbContext, AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // MediatR setup
-builder.Services.AddMediatR(typeof(CreatorSystem.Application.Posts.Commands.CreatePostCommand).Assembly);
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CreatorSystem.Application.Posts.Commands.CreatePostCommand).Assembly));
+
 
 var app = builder.Build();
 

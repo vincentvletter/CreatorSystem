@@ -1,9 +1,10 @@
-﻿using CreatorSystem.Domain.Entities;
+﻿using CreatorSystem.Application.Common.Interfaces;
+using CreatorSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CreatorSystem.Infrastructure.Data
 {
-    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
     {
         public DbSet<Post> Posts => Set<Post>();
 

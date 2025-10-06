@@ -1,15 +1,14 @@
-﻿using CreatorSystem.Domain.Entities;
-using CreatorSystem.Infrastructure.Data;
+﻿using CreatorSystem.Application.Common.Interfaces;
+using CreatorSystem.Domain.Entities;
 using MediatR;
-using System;
 
 namespace CreatorSystem.Application.Posts.Commands;
 
 public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Guid>
 {
-    private readonly AppDbContext _context;
+    private readonly IAppDbContext _context;
 
-    public CreatePostCommandHandler(AppDbContext context)
+    public CreatePostCommandHandler(IAppDbContext context)
     {
         _context = context;
     }
