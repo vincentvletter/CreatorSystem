@@ -26,11 +26,11 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await CreatorSystem.Infrastructure.Data.DbInitializer.SeedAsync(db);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//    await CreatorSystem.Infrastructure.Data.DbInitializer.SeedAsync(db);
+//}
 
 if (app.Environment.IsDevelopment())
 {
