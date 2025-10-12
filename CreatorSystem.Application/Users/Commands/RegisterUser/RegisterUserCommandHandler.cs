@@ -3,13 +3,11 @@ using CreatorSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace CreatorSystem.Application.Users.Commands
+namespace CreatorSystem.Application.Users.Commands.RegisterUser
 {
-    public record RegisterUserCommand(string Email, string Password, string ConfirmPassword) : IRequest<Guid>;
-
     public class RegisterUserCommandHandler(IAppDbContext context) : IRequestHandler<RegisterUserCommand, Guid>
     {
-        private readonly PasswordHasher<User> _hasher = new();     
+        private readonly PasswordHasher<User> _hasher = new();
 
         public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
