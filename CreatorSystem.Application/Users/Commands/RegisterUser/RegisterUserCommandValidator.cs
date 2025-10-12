@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 
-namespace CreatorSystem.Application.Users.Commands
+namespace CreatorSystem.Application.Users.Commands.RegisterUser
 {
     public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {
@@ -68,7 +68,7 @@ namespace CreatorSystem.Application.Users.Commands
         private async Task<bool> BeUniqueEmail(string email, CancellationToken cancellationToken)
         {
             var normalized = email.Trim().ToLowerInvariant();
-            return await _context.Users.AnyAsync(user => user.Email == normalized, cancellationToken); 
+            return !await _context.Users.AnyAsync(user => user.Email == normalized, cancellationToken); 
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using CreatorSystem.Application.Users.Commands;
-using CreatorSystem.Application.Users.Queries;
+﻿using CreatorSystem.Application.Users.Commands.RegisterUser;
+using CreatorSystem.Application.Users.Queries.LoginUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
