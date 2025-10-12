@@ -3,41 +3,32 @@
     public class Post
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public string Title { get; private set; }
-        public string Content { get; private set; }
-        public bool IsPublished { get; private set; }
+        public Guid UserId { get; private set; }
+        public string Title { get; private set; } = default!;
+        public string Content { get; private set; } = default!;
+        public string Platform { get; private set; } = default!;
+        public DateTime ScheduledAt { get; private set; }
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-        public DateTime? PublishedAt { get; private set; }
+        public bool IsPublished { get; private set; } = false;
 
-        private Post() { } // required for EF
+        private Post() { } // EF Core
 
-        public Post(string title, string content)
+        public Post(Guid userId, string title, string content, string platform, DateTime scheduledAt)
         {
-            if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Title cannot be empty");
-
+            UserId = userId;
             Title = title;
             Content = content;
+            Platform = platform;
+            ScheduledAt = scheduledAt;
         }
 
-        public void UpdateContent(string title, string content)
+        public void Update(string title, string content, DateTime scheduledAt)
         {
             Title = title;
             Content = content;
+            ScheduledAt = scheduledAt;
         }
 
-        public void Publish()
-        {
-            if (IsPublished)
-                throw new InvalidOperationException("Post is already published.");
-
-            IsPublished = true;
-            PublishedAt = DateTime.UtcNow;
-        }
-
-        public void Archive()
-        {
-            IsPublished = false;
-        }
+        public void MarkAsPublished() => IsPublished = true;
     }
 }
