@@ -7,6 +7,7 @@ namespace CreatorSystem.Infrastructure.Data
     public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
     {
         public DbSet<Post> Posts => Set<Post>();
+        public DbSet<User> Users => Set<User>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,6 +18,10 @@ namespace CreatorSystem.Infrastructure.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Title).HasMaxLength(200).IsRequired();
             });
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
     }
 }
