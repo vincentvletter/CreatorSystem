@@ -5,21 +5,21 @@ namespace CreatorSystem.Infrastructure.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedAsync(AppDbContext context)
-        {
-            await context.Database.MigrateAsync();
+        //public static async Task SeedAsync(AppDbContext context)
+        //{
+        //    await context.Database.MigrateAsync();
 
-            if (!await context.Posts.AnyAsync())
-            {
-                var posts = new List<Post>
-                {
-                    new("Welcome to CreatorSystem!", "Your first auto-seeded post 🎉"),
-                    new("AI Power", "Soon this system will generate captions automatically.")
-                };
+        //    if (!await context.Posts.AnyAsync())
+        //    {
+        //        var posts = new List<Post>
+        //        {
+        //            new("Welcome to CreatorSystem!", "Your first auto-seeded post 🎉"),
+        //            new("AI Power", "Soon this system will generate captions automatically.")
+        //        };
 
-                await context.Posts.AddRangeAsync(posts);
-                await context.SaveChangesAsync();
-            }
-        }
+        //        await context.Posts.AddRangeAsync(posts);
+        //        await context.SaveChangesAsync();
+        //    }
+        //}
     }
 }
