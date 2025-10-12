@@ -27,6 +27,8 @@ builder.Host.UseSerilog((ctx, lc) =>
 // ---------------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // ✅ Swagger configuration
 builder.Services.AddSwaggerGen(c =>

@@ -19,4 +19,10 @@
     <ProjectReference Include="..\CreatorSystem.Domain\CreatorSystem.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Posts\Commands\DeletePost\" />
+    <Folder Include="Posts\Commands\UpdatePost\" />
+    <Folder Include="Posts\Mapping\" />
+  </ItemGroup>
+
 </Project>
