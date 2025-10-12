@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CreatorSystem.Application.Users.Commands
 {
-    public record RegisterUserCommand(string Email, string Password) : IRequest<Guid>;
+    public record RegisterUserCommand(string Email, string Password, string ConfirmPassword) : IRequest<Guid>;
 
     public class RegisterUserCommandHandler(IAppDbContext context) : IRequestHandler<RegisterUserCommand, Guid>
     {
@@ -13,8 +13,11 @@ namespace CreatorSystem.Application.Users.Commands
 
         public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
             var passwordHash = _hasher.HashPassword(null!, request.Password);
-            var user = new User(request.Email, passwordHash);
+            var user = new User(normalizedEmail, passwordHash);
+            user.SetRole("User"); // of user.Role = "User" afhankelijk van jouw entity
 
             context.Users.Add(user);
             await context.SaveChangesAsync(cancellationToken);

@@ -18,6 +18,10 @@ namespace CreatorSystem.Infrastructure.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Title).HasMaxLength(200).IsRequired();
             });
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
     }
 }

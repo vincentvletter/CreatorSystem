@@ -24,11 +24,17 @@ namespace CreatorSystem.Infrastructure.Services
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
+            var expiryValue = jwtSettings["ExpiryMinutes"];
+            if (!double.TryParse(expiryValue, out var expiryMinutes))
+            {
+                expiryMinutes = 60; // default fallback
+            }
+
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],
                 audience: jwtSettings["Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["DurationInMinutes"]!)),
+                expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
                 signingCredentials: creds
             );
 

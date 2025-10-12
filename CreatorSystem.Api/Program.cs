@@ -7,7 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 using System.Text;
+using FluentValidation;
+using CreatorSystem.Application.Common.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,8 +73,19 @@ builder.Services.AddDbContext<IAppDbContext, AppDbContext>(opt =>
 // ---------------------------
 // 🔹 CQRS (MediatR)
 // ---------------------------
+// Scan de hele Application assembly
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(CreatorSystem.Application.Posts.Commands.CreatePostCommand).Assembly));
+{
+    cfg.RegisterServicesFromAssemblies(
+        Assembly.GetAssembly(typeof(CreatorSystem.Application.AssemblyMarker))!
+    );
+});
+
+// 🔥 Register FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<CreatorSystem.Application.AssemblyMarker>();
+
+// MediatR pipeline behavior voor validation
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // ---------------------------
 // 🔹 JWT Authentication
@@ -95,6 +109,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // ---------------------------
 // 🔹 Dependency Injection
 // ---------------------------
+
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddHealthChecks();
 

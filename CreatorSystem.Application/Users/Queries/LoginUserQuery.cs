@@ -14,7 +14,8 @@ namespace CreatorSystem.Application.Users.Queries
 
         public async Task<string> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+            var email = request.Email.Trim().ToLowerInvariant();
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
             if (user == null)
             {
                 throw new Exception("Invalid email or password.");
