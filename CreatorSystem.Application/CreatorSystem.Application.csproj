@@ -22,7 +22,6 @@
   <ItemGroup>
     <Folder Include="Posts\Commands\DeletePost\" />
     <Folder Include="Posts\Commands\UpdatePost\" />
-    <Folder Include="Posts\Mapping\" />
   </ItemGroup>
 
 </Project>

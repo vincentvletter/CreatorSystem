@@ -6,5 +6,5 @@ namespace CreatorSystem.Application.Posts.Commands.CreatePost
     string Title,
     string Content,
     string Platform,
-    DateTime ScheduledAt) : IRequest<Guid>;
+    DateTime ScheduledAt) : IRequest<CreatePostResponse>;
 }

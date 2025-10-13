@@ -2,18 +2,11 @@
 {
     public class PostDto
     {
-        public     Guid Id { get; init; }
-        public string Title { get; init; }
-        public string Content { get; init; }
-        public string Platform { get; init; }
-        public DateTime ScheduledAt { get; init; }
+        public required Guid Id { get; init; }
+        public required string Title { get; init; }
+        public required string Content { get; init; }
+        public required string Platform { get; init; }
+        public required DateTime ScheduledAt { get; init; }
         public bool IsPublished { get; init; }
     }
-    //public record PostDto(
-    //Guid Id,
-    //string Title,
-    //string Content,
-    //string Platform,
-    //DateTime ScheduledAt,
-    //bool IsPublished);
 }

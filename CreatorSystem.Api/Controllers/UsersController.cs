@@ -1,4 +1,5 @@
-﻿using CreatorSystem.Application.Users.Commands.RegisterUser;
+﻿using CreatorSystem.Application.Common.Responses;
+using CreatorSystem.Application.Users.Commands.RegisterUser;
 using CreatorSystem.Application.Users.Queries.LoginUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,17 +11,17 @@ namespace CreatorSystem.Api.Controllers
     public class UsersController(IMediator mediator) : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterUserCommand command)
+        public async Task<ActionResult<ApiResponse<RegisterUserResponse>>> Register([FromBody] RegisterUserCommand command)
         {
-            var userId = await mediator.Send(command);
-            return Ok(new { Message = "User registered successfully", UserId = userId });
+            var result = await mediator.Send(command);
+            return Ok(ApiResponse<RegisterUserResponse>.SuccessResponse(result));
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginUserQuery query)
+        public async Task<ActionResult<ApiResponse<LoginUserResponse>>> Login([FromBody] LoginUserQuery query)
         {
-            var token = await mediator.Send(query);
-            return Ok(new { Token = token });
+            var result = await mediator.Send(query);
+            return Ok(ApiResponse<LoginUserResponse>.SuccessResponse(result));
         }
     }
 }
