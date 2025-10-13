@@ -1,5 +1,6 @@
 ﻿using CreatorSystem.Application.Common.Interfaces;
 using CreatorSystem.Application.Posts.Dtos;
+using CreatorSystem.Application.Posts.Mappings;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +14,13 @@ namespace CreatorSystem.Application.Posts.Queries.GetAllPosts
             if (userId == Guid.Empty)
                 throw new UnauthorizedAccessException("User not authenticated.");
 
-            return await context.Posts
+            var posts = await context.Posts
                 .Where(p => p.UserId == userId)
-                .Select(p => new PostDto { Id = p.Id, Title = p.Title, Content = p.Content, Platform = p.Platform, ScheduledAt = p.ScheduledAt, IsPublished = p.IsPublished })
                 .OrderByDescending(p => p.ScheduledAt)
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
+           
+            return posts.Select(p => p.ToDto()).ToList();
         }
     }
 }

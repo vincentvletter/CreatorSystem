@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CreatorSystem.Application.Users.Queries.LoginUser
 {
-    public class LoginUserQueryHandler(IAppDbContext context, ITokenService tokenService) : IRequestHandler<LoginUserQuery, string>
+    public class LoginUserQueryHandler(IAppDbContext context, ITokenService tokenService) : IRequestHandler<LoginUserQuery, LoginUserResponse>
     {
         private readonly PasswordHasher<User> _hasher = new();
 
-        public async Task<string> Handle(LoginUserQuery request, CancellationToken cancellationToken)
+        public async Task<LoginUserResponse> Handle(LoginUserQuery request, CancellationToken cancellationToken)
         {
             var email = request.Email.Trim().ToLowerInvariant();
             var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
@@ -25,7 +25,7 @@ namespace CreatorSystem.Application.Users.Queries.LoginUser
                 throw new Exception("Invalid email or password.");
             }
 
-            return tokenService.CreateToken(user);
+            return new LoginUserResponse { Token = tokenService.CreateToken(user) };
         }
     }
 }
