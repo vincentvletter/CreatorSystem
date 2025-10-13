@@ -1,6 +1,7 @@
-﻿using System.Net;
-using System.Text.Json;
+﻿using CreatorSystem.Application.Common.Responses;
 using FluentValidation;
+using System.Net;
+using System.Text.Json;
 
 namespace CreatorSystem.Api.Middleware;
 
@@ -35,72 +36,41 @@ public class ExceptionHandlingMiddleware
         var response = context.Response;
         response.ContentType = "application/json";
 
-        var problem = ex switch
+        ApiResponse<object> apiResponse;
+
+        switch (ex)
         {
-            // 🔹 FluentValidation exceptions
-            ValidationException validationEx => new ApiErrorResponse
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Title = "Validation Error",
-                Errors = validationEx.Errors
-                    .Select(f => new ApiValidationError
+            case ValidationException validationEx:
+                apiResponse = ApiResponse<object>.FailResponse(
+                    "Validation error",
+                    correlationId,
+                    validationEx.Errors.Select(f => new ApiError
                     {
                         Field = f.PropertyName,
                         Message = f.ErrorMessage
                     })
-                    .ToList(),
-                CorrelationId = correlationId
-            },
+                    .ToList()
+                );
+                response.StatusCode = StatusCodes.Status400BadRequest;
+                break;
 
-            // 🔹 Duplicate / business conflict
-            InvalidOperationException => new ApiErrorResponse
-            {
-                StatusCode = (int)HttpStatusCode.Conflict,
-                Title = "Conflict",
-                Detail = ex.Message,
-                CorrelationId = correlationId
-            },
+            case UnauthorizedAccessException:
+                apiResponse = ApiResponse<object>.FailResponse("Unauthorized", correlationId);
+                response.StatusCode = StatusCodes.Status401Unauthorized;
+                break;
 
-            // 🔹 Invalid argument / bad input
-            ArgumentException => new ApiErrorResponse
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Title = "Bad Request",
-                Detail = ex.Message,
-                CorrelationId = correlationId
-            },
+            case KeyNotFoundException:
+                apiResponse = ApiResponse<object>.FailResponse("Not Found", correlationId);
+                response.StatusCode = StatusCodes.Status404NotFound;
+                break;
 
-            // 🔹 Unauthorized access
-            UnauthorizedAccessException => new ApiErrorResponse
-            {
-                StatusCode = (int)HttpStatusCode.Unauthorized,
-                Title = "Unauthorized",
-                Detail = ex.Message,
-                CorrelationId = correlationId
-            },
+            default:
+                apiResponse = ApiResponse<object>.FailResponse("An unexpected error occurred.", correlationId);
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                break;
+        }
 
-            // 🔹 Not found (optioneel: eigen NotFoundException maken)
-            KeyNotFoundException => new ApiErrorResponse
-            {
-                StatusCode = (int)HttpStatusCode.NotFound,
-                Title = "Not Found",
-                Detail = ex.Message,
-                CorrelationId = correlationId
-            },
-
-            // 🔹 Default fallback
-            _ => new ApiErrorResponse
-            {
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Title = "Internal Server Error",
-                Detail = "An unexpected error occurred. Please try again later.",
-                CorrelationId = correlationId
-            }
-        };
-
-        response.StatusCode = problem.StatusCode;
-
-        var json = JsonSerializer.Serialize(problem, new JsonSerializerOptions
+        var json = JsonSerializer.Serialize(apiResponse, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true
@@ -108,26 +78,4 @@ public class ExceptionHandlingMiddleware
 
         await response.WriteAsync(json);
     }
-}
-
-/// <summary>
-/// Generic structured API error response for consistent output
-/// </summary>
-public class ApiErrorResponse
-{
-    public int StatusCode { get; set; }
-    public string Title { get; set; } = default!;
-    public string? Detail { get; set; }
-    public List<ApiValidationError>? Errors { get; set; }
-    public string CorrelationId { get; set; } = default!;
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-}
-
-/// <summary>
-/// Represents a single validation error (field + message)
-/// </summary>
-public class ApiValidationError
-{
-    public string Field { get; set; } = default!;
-    public string Message { get; set; } = default!;
 }

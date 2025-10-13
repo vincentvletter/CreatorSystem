@@ -1,15 +1,16 @@
 ﻿using CreatorSystem.Application.Common.Interfaces;
+using CreatorSystem.Application.Users.Mappings;
 using CreatorSystem.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace CreatorSystem.Application.Users.Commands.RegisterUser
 {
-    public class RegisterUserCommandHandler(IAppDbContext context) : IRequestHandler<RegisterUserCommand, Guid>
+    public class RegisterUserCommandHandler(IAppDbContext context) : IRequestHandler<RegisterUserCommand, RegisterUserResponse>
     {
         private readonly PasswordHasher<User> _hasher = new();
 
-        public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        public async Task<RegisterUserResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
@@ -20,7 +21,7 @@ namespace CreatorSystem.Application.Users.Commands.RegisterUser
             context.Users.Add(user);
             await context.SaveChangesAsync(cancellationToken);
 
-            return user.Id;
+            return user.ToRegisterResponse();
         }
     }
 }
