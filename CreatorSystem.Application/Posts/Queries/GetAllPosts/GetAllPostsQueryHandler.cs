@@ -14,13 +14,12 @@ namespace CreatorSystem.Application.Posts.Queries.GetAllPosts
             if (userId == Guid.Empty)
                 throw new UnauthorizedAccessException("User not authenticated.");
 
-            var posts = await context.Posts
+            return await context.Posts
                 .Where(p => p.UserId == userId)
-                .OrderByDescending(p => p.ScheduledAt)
+                .OrderBy(p => p.ScheduledAt)
+                .Select(PostMapper.Projection)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
-           
-            return posts.Select(p => p.ToDto()).ToList();
         }
     }
 }
