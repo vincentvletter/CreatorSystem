@@ -7,7 +7,7 @@ namespace CreatorSystem.Infrastructure.Data
     public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
     {
         public DbSet<Post> Posts => Set<Post>();
-        public DbSet<User> Users => Set<User>();
+        public DbSet<User> Users => Set<User>();    
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

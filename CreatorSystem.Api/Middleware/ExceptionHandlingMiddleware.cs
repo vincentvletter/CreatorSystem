@@ -55,7 +55,7 @@ public class ExceptionHandlingMiddleware
                 break;
 
             case UnauthorizedAccessException:
-                apiResponse = ApiResponse<object>.FailResponse("Unauthorized", correlationId);
+                apiResponse = ApiResponse<object>.FailResponse($"Unauthorized: '{ex.Message}'", correlationId);
                 response.StatusCode = StatusCodes.Status401Unauthorized;
                 break;
 
@@ -65,7 +65,7 @@ public class ExceptionHandlingMiddleware
                 break;
 
             default:
-                apiResponse = ApiResponse<object>.FailResponse("An unexpected error occurred.", correlationId);
+                apiResponse = ApiResponse<object>.FailResponse($"An unexpected error occurred: '{ex.Message}'", correlationId);
                 response.StatusCode = StatusCodes.Status500InternalServerError;
                 break;
         }

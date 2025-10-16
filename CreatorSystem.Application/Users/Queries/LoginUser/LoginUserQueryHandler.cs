@@ -16,13 +16,13 @@ namespace CreatorSystem.Application.Users.Queries.LoginUser
             var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
             if (user == null)
             {
-                throw new Exception("Invalid email or password.");
+                throw new UnauthorizedAccessException("Invalid email or password.");
             }
 
             var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
             if (result == PasswordVerificationResult.Failed)
             {
-                throw new Exception("Invalid email or password.");
+                throw new UnauthorizedAccessException("Invalid email or password.");
             }
 
             return new LoginUserResponse { Token = tokenService.CreateToken(user) };

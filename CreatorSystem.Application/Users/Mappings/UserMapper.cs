@@ -1,12 +1,21 @@
 ﻿using CreatorSystem.Application.Users.Commands.RegisterUser;
 using CreatorSystem.Application.Users.Dtos;
 using CreatorSystem.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace CreatorSystem.Application.Users.Mappings
 {
     public static class UserMapper
     {
+        public static readonly Expression<Func<User, UserDto>> Projection = user => new UserDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            CreatedAt = user.CreatedAt
+        };
+
         public static UserDto ToDto(this User user) => new()
+
         {
             Id = user.Id,
             Email = user.Email,
